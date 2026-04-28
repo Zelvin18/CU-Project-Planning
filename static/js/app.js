@@ -1,46 +1,16 @@
 const form        = document.getElementById("projectForm");
 const resultsDiv  = document.getElementById("results");
 const downloadBtn = document.getElementById("downloadBtn");
+const fabDownload = document.getElementById("fabDownload");
 
 let lastFormData = null;
 
-// ── Form Submit ────────────────────────────────────────────────────
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const submitBtn = form.querySelector(".btn-primary");
-    submitBtn.innerHTML = '<span class="spinner"></span>Calculating...';
-    submitBtn.disabled = true;
-
-    const data = collectFormData();
-    lastFormData = data;
-
-    try {
-        const res  = await fetch("/estimate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        });
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.error || "Estimation failed.");
-
-        renderResults(json.data);
-        downloadBtn.disabled = false;
-        showToast("Estimates calculated successfully.", "success");
-        resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
-    } catch (err) {
-        showToast(err.message, "error");
-    } finally {
-        submitBtn.innerHTML = "Calculate Estimates";
-        submitBtn.disabled = false;
-    }
-});
-
-// ── Download Report ────────────────────────────────────────────────
-downloadBtn.addEventListener("click", async () => {
+// ── Shared download logic ──────────────────────────────────────────
+async function triggerDownload(btn) {
     if (!lastFormData) return;
-    downloadBtn.innerHTML = '<span class="spinner"></span>Generating...';
-    downloadBtn.disabled = true;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>Generating...';
+    btn.disabled = true;
 
     try {
         const res = await fetch("/download-report", {
@@ -66,15 +36,54 @@ downloadBtn.addEventListener("click", async () => {
     } catch (err) {
         showToast(err.message, "error");
     } finally {
-        downloadBtn.innerHTML = "Download Report";
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+    }
+}
+
+// ── Form Submit ────────────────────────────────────────────────────
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const submitBtn = form.querySelector(".btn-primary");
+    submitBtn.innerHTML = '<span class="spinner"></span>Calculating...';
+    submitBtn.disabled = true;
+
+    const data = collectFormData();
+    lastFormData = data;
+
+    try {
+        const res  = await fetch("/estimate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        if (!json.success) throw new Error(json.error || "Estimation failed.");
+
+        renderResults(json.data);
         downloadBtn.disabled = false;
+        // Show mobile FAB
+        fabDownload.style.display = "flex";
+        showToast("Estimates calculated successfully.", "success");
+        resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (err) {
+        showToast(err.message, "error");
+    } finally {
+        submitBtn.innerHTML = "Calculate Estimates";
+        submitBtn.disabled = false;
     }
 });
+
+// ── Download buttons ───────────────────────────────────────────────
+downloadBtn.addEventListener("click", () => triggerDownload(downloadBtn));
+fabDownload.addEventListener("click",  () => triggerDownload(fabDownload));
 
 // ── Reset ──────────────────────────────────────────────────────────
 form.addEventListener("reset", () => {
     resultsDiv.style.display = "none";
     downloadBtn.disabled = true;
+    fabDownload.style.display = "none";
     lastFormData = null;
 });
 
