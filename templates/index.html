@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cavendish University - Project Planner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Cavendish University Logo" class="logo-img">
+                <div>
+                    <h1>Cavendish University</h1>
+                    <p class="subtitle">Project Planning & Estimation Tool</p>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <form id="projectForm">
+                <div class="form-section">
+                    <h2>Project Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="project_title">Project Title *</label>
+                            <input type="text" id="project_title" name="project_title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="department">Department *</label>
+                            <input type="text" id="department" name="department" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="project_manager">Project Manager</label>
+                            <input type="text" id="project_manager" name="project_manager">
+                        </div>
+                        <div class="form-group">
+                            <label for="project_type">Project Type *</label>
+                            <select id="project_type" name="project_type" required>
+                                <option value="software">Software Development</option>
+                                <option value="research">Research Project</option>
+                                <option value="departmental">Departmental Initiative</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Project Parameters</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="project_size">Project Size *</label>
+                            <select id="project_size" name="project_size" required>
+                                <option value="small">Small (200 base hours)</option>
+                                <option value="medium" selected>Medium (500 base hours)</option>
+                                <option value="large">Large (1200 base hours)</option>
+                                <option value="enterprise">Enterprise (2500 base hours)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="complexity">Complexity Level *</label>
+                            <select id="complexity" name="complexity" required>
+                                <option value="low">Low (0.75x)</option>
+                                <option value="medium" selected>Medium (1.0x)</option>
+                                <option value="high">High (1.4x)</option>
+                                <option value="critical">Critical (1.8x)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="num_staff">Number of Staff *</label>
+                            <input type="number" id="num_staff" name="num_staff" min="1" max="50" value="4" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hours_per_day">Working Hours/Day *</label>
+                            <input type="number" id="hours_per_day" name="hours_per_day" min="1" max="24" step="0.5" value="8" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hourly_rate">Hourly Rate (UGX) *</label>
+                            <input type="number" id="hourly_rate" name="hourly_rate" min="0" step="1" value="50000" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Calculate Estimates</button>
+                    <button type="button" id="downloadBtn" class="btn btn-secondary" disabled>Download Report</button>
+                    <button type="reset" class="btn btn-outline">Reset Form</button>
+                </div>
+            </form>
+
+            <div id="results" class="results-section" style="display: none;">
+                <h2>Estimation Results</h2>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Total Effort</h3>
+                        <p class="result-value" id="total_effort">-</p>
+                        <p class="result-label">person-hours</p>
+                    </div>
+                    <div class="result-card">
+                        <h3>Duration</h3>
+                        <p class="result-value" id="duration_days">-</p>
+                        <p class="result-label">working days</p>
+                        <p class="result-sublabel" id="duration_weeks">-</p>
+                    </div>
+                    <div class="result-card">
+                        <h3>Recommended Staff</h3>
+                        <p class="result-value" id="recommended_staff">-</p>
+                        <p class="result-label">team members</p>
+                    </div>
+                    <div class="result-card highlight">
+                        <h3>Total Budget</h3>
+                        <p class="result-value" id="total_budget">-</p>
+                        <p class="result-label">including 10% contingency</p>
+                    </div>
+                </div>
+
+                <div class="phase-breakdown">
+                    <h3>Phase-by-Phase Breakdown</h3>
+                    <table id="phaseTable">
+                        <thead>
+                            <tr>
+                                <th>Phase</th>
+                                <th>Percentage</th>
+                                <th>Hours</th>
+                                <th>Days</th>
+                                <th>Cost (UGX)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="phaseTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Cavendish University. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
