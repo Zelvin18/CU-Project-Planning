@@ -28,7 +28,7 @@ def download_report():
         buffer = io.BytesIO()
         buffer.write(report_text.encode("utf-8"))
         buffer.seek(0)
-        filename = f"Cavendish_Project_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        filename = f"MTN_Uganda_Project_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
         return send_file(
             buffer,
             as_attachment=True,

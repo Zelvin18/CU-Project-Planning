@@ -116,16 +116,25 @@ def calculate_project_estimates(data: dict) -> dict:
 
 
 def generate_report_text(data: dict, result: dict) -> str:
-    now = datetime.now().strftime("%d %B %Y, %H:%M")
-    sep  = "=" * 70
-    sep2 = "-" * 70
+    now  = datetime.now().strftime("%d %B %Y, %H:%M")
+    ref  = f"MTN-UG-PPE-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    sep  = "=" * 72
+    sep2 = "-" * 72
 
     lines = [
         sep,
-        "         CAVENDISH UNIVERSITY — PROJECT PLANNING & ESTIMATION REPORT",
+        "   ███╗   ███╗████████╗███╗   ██╗    ██╗   ██╗ ██████╗  █████╗ ███╗   ██╗██████╗  █████╗ ",
+        "   ████╗ ████║╚══██╔══╝████╗  ██║    ██║   ██║██╔════╝ ██╔══██╗████╗  ██║██╔══██╗██╔══██╗",
+        "   ██╔████╔██║   ██║   ██╔██╗ ██║    ██║   ██║██║  ███╗███████║██╔██╗ ██║██║  ██║███████║",
+        "   ██║╚██╔╝██║   ██║   ██║╚██╗██║    ██║   ██║██║   ██║██╔══██║██║╚██╗██║██║  ██║██╔══██║",
+        "   ██║ ╚═╝ ██║   ██║   ██║ ╚████║    ╚██████╔╝╚██████╔╝██║  ██║██║ ╚████║██████╔╝██║  ██║",
+        "   ╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═══╝     ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝",
+        sep,
+        "              PROJECT PLANNING & ESTIMATION REPORT",
         sep,
         f"  Generated On  : {now}",
-        f"  Report Ref    : CU-PPE-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+        f"  Report Ref    : {ref}",
+        f"  Organisation  : MTN Uganda Limited",
         sep,
         "",
         "  PROJECT DETAILS",
@@ -142,54 +151,58 @@ def generate_report_text(data: dict, result: dict) -> str:
         "",
         "  ASSUMPTIONS",
         sep2,
-        f"  • Base effort for '{data.get('project_size','').capitalize()}' size project : {result['base_hours']} person-hours",
-        f"  • Complexity multiplier ({data.get('complexity','').capitalize()})           : x{result['complexity_multiplier']}",
-        f"  • Daily team capacity ({data.get('num_staff')} staff x {data.get('hours_per_day')} hrs)  : {int(data.get('num_staff',4)) * float(data.get('hours_per_day',8))} hrs/day",
-        f"  • Contingency reserve                                : 10%",
+        f"  • Base effort for '{data.get('project_size','').capitalize()}' size project  : {result['base_hours']} person-hours",
+        f"  • Complexity multiplier ({data.get('complexity','').capitalize()})            : x{result['complexity_multiplier']}",
+        f"  • Daily team capacity ({data.get('num_staff')} staff x {data.get('hours_per_day')} hrs)   : {int(data.get('num_staff',4)) * float(data.get('hours_per_day',8))} hrs/day",
+        f"  • Contingency reserve                                  : 10%",
+        f"  • All estimates based on MTN Uganda project standards.",
         "",
         "  EFFORT & DURATION ESTIMATES",
         sep2,
         f"  Total Effort Required    : {result['total_effort_hours']} person-hours",
         f"  Estimated Duration       : {result['duration_days']} working days",
         f"                           : {result['duration_weeks']} weeks",
-        f"                           : {result['duration_months']} months",
+        f"                           : {result['duration_months']} months (approx.)",
         f"  Recommended Staffing     : {result['recommended_staff']} staff members",
         "",
         "  BUDGET SUMMARY",
         sep2,
-        f"  Total Labour Cost        : UGX {result['total_labour_cost']:>15,.0f}",
-        f"  Contingency (10%)        : UGX {result['contingency']:>15,.0f}",
-        f"  ─────────────────────────────────────────",
-        f"  TOTAL PROJECT BUDGET     : UGX {result['total_budget']:>15,.0f}",
+        f"  Total Labour Cost        : UGX {result['total_labour_cost']:>18,.0f}",
+        f"  Contingency (10%)        : UGX {result['contingency']:>18,.0f}",
+        f"  {'─'*50}",
+        f"  TOTAL PROJECT BUDGET     : UGX {result['total_budget']:>18,.0f}",
         "",
         "  PHASE-BY-PHASE EFFORT DISTRIBUTION",
         sep2,
-        f"  {'Phase':<28} {'%':>5}  {'Hours':>8}  {'Days':>6}  {'Cost (UGX)':>15}",
-        f"  {'─'*28} {'─'*5}  {'─'*8}  {'─'*6}  {'─'*15}",
+        f"  {'Phase':<28} {'%':>5}  {'Hours':>8}  {'Days':>6}  {'Cost (UGX)':>18}",
+        f"  {'─'*28} {'─'*5}  {'─'*8}  {'─'*6}  {'─'*18}",
     ]
 
     for phase, info in result["phase_breakdown"].items():
         lines.append(
-            f"  {phase:<28} {info['percentage']:>4.1f}%  {info['hours']:>8.1f}  {info['days']:>6.1f}  {info['cost']:>15,.0f}"
+            f"  {phase:<28} {info['percentage']:>4.1f}%  {info['hours']:>8.1f}  {info['days']:>6.1f}  {info['cost']:>18,.0f}"
         )
 
     lines += [
-        f"  {'─'*28} {'─'*5}  {'─'*8}  {'─'*6}  {'─'*15}",
-        f"  {'TOTAL':<28} {'100.0':>5}%  {result['total_effort_hours']:>8.1f}  {result['duration_days']:>6.1f}  {result['total_labour_cost']:>15,.0f}",
+        f"  {'─'*28} {'─'*5}  {'─'*8}  {'─'*6}  {'─'*18}",
+        f"  {'TOTAL':<28} {'100.0':>5}%  {result['total_effort_hours']:>8.1f}  {result['duration_days']:>6.1f}  {result['total_labour_cost']:>18,.0f}",
         "",
         sep,
         "  NOTES & RECOMMENDATIONS",
         sep2,
-        "  1. This estimate is based on standard industry benchmarks adapted for",
-        "     Cavendish University project guidelines.",
+        "  1. Estimates are based on industry-standard benchmarks adapted for",
+        "     MTN Uganda project delivery guidelines.",
         "  2. Actual effort may vary based on team experience and scope changes.",
-        "  3. A 10% contingency has been included to cover unforeseen risks.",
-        "  4. Regular progress reviews are recommended at each phase milestone.",
+        "  3. A 10% contingency reserve has been included to cover unforeseen risks.",
+        "  4. Regular milestone reviews are recommended at the end of each phase.",
         "  5. All estimates assume full-time staff availability during working hours.",
+        "  6. This report should be reviewed and approved by the Project Manager",
+        "     before project commencement.",
         "",
         sep,
-        "  © Cavendish University — Project Planning & Estimation Tool",
+        "  © MTN Uganda Limited — Project Planning & Estimation Tool",
         "  This report is confidential and intended for internal use only.",
+        "  Unauthorised distribution is strictly prohibited.",
         sep,
     ]
 
